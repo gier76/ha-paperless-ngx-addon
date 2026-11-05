@@ -1,6 +1,6 @@
 ---
 name: Paperless-ngx
-version: "3.3.4"
+version: "4.0.6"
 slug: paperless-ngx
 url: https://github.com/paperless-ngx/paperless-ngx
 init: false
