@@ -1,6 +1,6 @@
 ---
 name: Paperless-ngx
-version: "4.0.6"
+version: "4.0.7"
 slug: paperless-ngx
 url: https://github.com/paperless-ngx/paperless-ngx
 init: false
@@ -21,8 +21,10 @@ arch:
 startup: system
 ports:
   80/tcp: null
+  8000/tcp: null
 ports_description:
   80/tcp: Web interface (Not required for Ingress)
+  8000/tcp: Direct API port (bypasses ingress auth; for HA integration and upload watchers)
 map:
   - addon_config:rw
   - share:rw
