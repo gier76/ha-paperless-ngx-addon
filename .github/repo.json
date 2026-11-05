@@ -1,0 +1,8 @@
+{
+  "owner": "gier76",
+  "repo": "ha-paperless-ngx-addon",
+  "url": "https://github.com/gier76/ha-paperless-ngx-addon",
+  "version": "1",
+  "title": "Basti Paperless Add-ons",
+  "supported_architectures": ["amd64", "aarch64"]
+}
