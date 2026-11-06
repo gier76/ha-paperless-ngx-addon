@@ -32,4 +32,4 @@ schema:
   subscribe_enabled: bool
   subscribe_interval: int
   debug: bool
-  log_level: list(debug,info,warning,error)
+  log_level: str
