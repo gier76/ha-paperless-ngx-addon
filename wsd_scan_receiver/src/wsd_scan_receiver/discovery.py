@@ -35,7 +35,7 @@ WSA_ANONYMOUS = {
     ),
 }
 HELLO_INTERVAL_SECONDS = 60.0
-DISCOVERY_TYPES = "dpws:Device pub:Computer"
+DISCOVERY_TYPES = "dpws:Device pub:Computer wscn:Scan"
 
 
 @dataclass(frozen=True)
@@ -136,7 +136,9 @@ def is_relevant_probe(probe: Probe) -> bool:
             return True
         if type_token.endswith(":computer"):
             return True
-        if type_token.endswith(":device") and not type_token.startswith("wscn:"):
+        if type_token.endswith(":device"):
+            return True
+        if type_token.endswith(":scan") or type_token.endswith(":scandevice"):
             return True
     return False
 
