@@ -772,12 +772,13 @@ class Config:
     @classmethod
     def from_env(cls) -> Config:
         uuid_file = Path(os.getenv("WSD_UUID_FILE", "/data/wsd-uuid"))
+        addon_options = _load_optional_json_object(Path("/data/options.json"))
         service_settings_store = ServiceSettingsStore(SCAN_CONFIG_FILE)
         service_settings = service_settings_store.get()
         post_processing_store = PostProcessingSettingsStore(SCAN_CONFIG_FILE)
         ui_settings_store = UiSettingsStore(SCAN_CONFIG_FILE)
         scan_ticket_store = ScanTicketStore(SCAN_CONFIG_FILE, SCAN_DEFAULTS_FILE)
-        device_name = service_settings.wsd_device_name
+        device_name = service_settings.wsd_device_name or str(addon_options.get("device_name") or "")
         if not device_name:
             raise ValueError("WSD_DEVICE_NAME must not be empty")
         return cls(
@@ -786,19 +787,19 @@ class Config:
             http_port=_env_port("WSD_HTTP_PORT", 5357),
             output_dir=Path(os.getenv("OUTPUT_DIR", "/scans")),
             original_dir=Path(os.getenv("ORIGINAL_DIR", "/original")),
-            debug=service_settings.debug,
+            debug=service_settings.debug or bool(addon_options.get("debug", False)),
             raw_dump_dir=Path(os.getenv("RAW_DUMP_DIR", "/debug-dumps")),
-            log_level=service_settings.log_level,
+            log_level=service_settings.log_level or str(addon_options.get("log_level") or "info"),
             host_ip=detect_host_ip(service_settings.wsd_host),
             interface=service_settings.wsd_interface or None,
-            scanner_ip=service_settings.wsd_scanner_ip or None,
+            scanner_ip=service_settings.wsd_scanner_ip or str(addon_options.get("scanner_ip") or "") or None,
             wsd_subscribe_enabled=parse_bool(
                 os.getenv("WSD_SUBSCRIBE_ENABLED"),
-                default=False,
+                default=bool(addon_options.get("subscribe_enabled", False)),
             ),
             wsd_subscribe_interval_seconds=_env_positive_int(
                 "WSD_SUBSCRIBE_INTERVAL_SECONDS",
-                60,
+                int(addon_options.get("subscribe_interval") or 60),
             ),
             max_post_bytes=_env_positive_int("MAX_POST_BYTES", 100 * 1024 * 1024),
             scan_ticket=scan_ticket_store.get(),
