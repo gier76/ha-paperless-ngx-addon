@@ -1,0 +1,38 @@
+version: "0.1.0"
+slug: "wsd_scan_receiver"
+name: "WSD Scan Receiver (Scan-to-PC)"
+description: >
+  Acts as a WSD/WS-Scan scan destination for network scanners and MFPs
+  (e.g. Canon "Scan to PC"/"Save to computer"). Received scans are written
+  directly into the Paperless-ngx consume folder (/share/paperless/consume).
+url: "https://github.com/gier76/ha-paperless-ngx-addon"
+arch:
+  - amd64
+dockerfile: Dockerfile
+startup: system
+boot: auto
+host_network: true
+map: []
+ingress: 8888
+ingress_title: "WSD Scan Settings"
+ingress_description: "Settings web UI for the WSD scan receiver"
+options:
+  device_name: "Paperless"
+  device_hostname: "Paperless"
+  scanner_ip: "192.168.1.33"
+  subscribe_enabled: true
+  subscribe_interval: 60
+  debug: false
+  log_level: "info"
+schema:
+  device_name: str
+  device_hostname: str
+  scanner_ip: str
+  subscribe_enabled: bool
+  subscribe_interval: int
+  debug: bool
+  log_level: list
+    - debug
+    - info
+    - warning
+    - error
