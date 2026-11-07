@@ -2,7 +2,7 @@ FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    OUTPUT_DIR=/share/paperless/consume \
+    OUTPUT_DIR=/data/scans \
     ORIGINAL_DIR=/share/paperless/original \
     RAW_DUMP_DIR=/data/debug-dumps \
     DATA_DIR=/data \
