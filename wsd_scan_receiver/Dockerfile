@@ -3,7 +3,7 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     OUTPUT_DIR=/data/scans \
-    ORIGINAL_DIR=/share/paperless/original \
+    ORIGINAL_DIR=/data/originals \
     RAW_DUMP_DIR=/data/debug-dumps \
     DATA_DIR=/data \
     WSD_HTTP_PORT=5357 \
