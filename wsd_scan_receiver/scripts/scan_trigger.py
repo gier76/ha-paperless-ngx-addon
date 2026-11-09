@@ -12,9 +12,13 @@ from wsd_scan_receiver.ws_scan_client import (
 
 configure_logging("INFO")
 svc = WsScanClientService(Config.from_env())
+import time
 path = "/data/wsd-subscriptions.json"
-if not os.path.exists(path):
-    svc.probe_once()
+deadline = time.monotonic() + 20
+while not os.path.exists(path):
+    if time.monotonic() > deadline:
+        raise SystemExit("keine WSD-Subscription: wsd-subscriptions.json fehlt (Client subscribed noch nicht)")
+    time.sleep(2)
 subs = json.load(open(path))
 sub = list(subs.values())[0]
 ticket = svc.config.scan_ticket_store.get() if svc.config.scan_ticket_store else svc.config.scan_ticket
