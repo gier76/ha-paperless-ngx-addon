@@ -1,5 +1,8 @@
 FROM python:3.12-slim
 
+RUN apt-get update && apt-get install -y --no-install-recommends docker-cli \
+    && rm -rf /var/lib/apt/lists/*
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     OUTPUT_DIR=/data/scans \
@@ -13,10 +16,11 @@ WORKDIR /app
 
 COPY pyproject.toml README.md ./
 COPY src ./src
+COPY scripts ./scripts
 
 RUN pip install --no-cache-dir .
 
-CMD ["sh", "-c", "mkdir -p /share/paperless/consume /share/paperless/original /data/debug-dumps; export WSD_DEVICE_NAME=\"${DEVICE_NAME:-Paperless}\" WSD_HOSTNAME=\"${DEVICE_HOSTNAME:-Paperless}\" WSD_SCANNER_IP=\"${SCANNER_IP:-}\" WSD_SUBSCRIBE_ENABLED=\"${SUBSCRIBE_ENABLED:-false}\" WSD_SUBSCRIBE_INTERVAL_SECONDS=\"${SUBSCRIBE_INTERVAL:-60}\" WSD_DEBUG=\"${DEBUG:-false}\" LOG_LEVEL=\"${LOG_LEVEL:-info}\"; umask 022; exec wsd-scan-receiver"]
+CMD ["sh", "-c", "exec /app/scripts/run.sh"]
 
 EXPOSE 5357/tcp
 EXPOSE 8888/tcp

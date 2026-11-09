@@ -1,10 +1,11 @@
-version: "0.1.0"
+version: "0.1.1"
 slug: "wsd_scan_receiver"
 name: "WSD Scan Receiver (Scan-to-PC)"
 description: >
   Acts as a WSD/WS-Scan scan destination for network scanners and MFPs
-  (e.g. Canon "Scan to PC"/"Save to computer"). Received scans are written
-  directly into the Paperless-ngx consume folder (/share/paperless/consume).
+  (e.g. Canon "Scan to PC"/"Save to computer"). Self-contained delivery:
+  scans are stored in /data/scans and moved into the Paperless-ngx add-on
+  consume folder via the Docker socket (no host-side processes).
 url: "https://github.com/gier76/ha-paperless-ngx-addon"
 arch:
   - amd64
@@ -12,6 +13,7 @@ dockerfile: Dockerfile
 startup: system
 boot: auto
 host_network: true
+privileged: true
 map:
   - share
 ingress: 8888
@@ -25,6 +27,7 @@ options:
   subscribe_interval: 60
   debug: false
   log_level: "info"
+  paperless_container: "app_55eca821_paperless-ngx"
 schema:
   device_name: str
   device_hostname: str
@@ -33,3 +36,4 @@ schema:
   subscribe_interval: int
   debug: bool
   log_level: str
+  paperless_container: str
