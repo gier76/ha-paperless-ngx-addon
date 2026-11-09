@@ -21,7 +21,7 @@ PAPERLESS_CONTAINER="${PAPERLESS_CONTAINER:-app_55eca821_paperless-ngx}"
       M=$(stat -c %Y /share/wsd_scan_trigger 2>/dev/null || echo 0)
       if [ "$M" != "$LAST" ]; then
         LAST=$M
-        python3 /app/scan_trigger.py >>/data/scan.log 2>&1
+        python3 /app/scripts/scan_trigger.py >>/data/scan.log 2>&1
       fi
     fi
     for f in /data/scans/*.jpg; do
@@ -42,7 +42,7 @@ PAPERLESS_CONTAINER="${PAPERLESS_CONTAINER:-app_55eca821_paperless-ngx}"
   while :; do
     PID=$(cat /tmp/wsclient.pid 2>/dev/null)
     if [ -z "$PID" ] || ! kill -0 "$PID" 2>/dev/null; then
-      python3 /app/client_loop.py >>/data/client.log 2>&1 &
+      python3 /app/scripts/client_loop.py >>/data/client.log 2>&1 &
       echo $! > /tmp/wsclient.pid
     fi
     if [ -f /data/client.log ]; then
