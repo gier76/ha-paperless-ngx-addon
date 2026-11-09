@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends docker-cli \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
+    DOCKER_HOST=unix:///run/docker.sock \
     PYTHONUNBUFFERED=1 \
     OUTPUT_DIR=/data/scans \
     ORIGINAL_DIR=/data/originals \

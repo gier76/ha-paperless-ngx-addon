@@ -1,4 +1,4 @@
-version: "0.1.1"
+version: "0.1.2"
 slug: "wsd_scan_receiver"
 name: "WSD Scan Receiver (Scan-to-PC)"
 description: >
@@ -13,7 +13,8 @@ dockerfile: Dockerfile
 startup: system
 boot: auto
 host_network: true
-privileged: true
+docker_api: true
+protected: false
 map:
   - share
 ingress: 8888
