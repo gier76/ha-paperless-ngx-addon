@@ -12,6 +12,10 @@ export WSD_DEVICE_NAME="${DEVICE_NAME:-Paperless}" \
        LOG_LEVEL="${LOG_LEVEL:-info}"
 PAPERLESS_CONTAINER=$(python3 -c "import json; print(json.load(open('/data/options.json')).get('paperless_container', 'app_55eca821_paperless-ngx'))" 2>/dev/null)
 PAPERLESS_CONTAINER="${PAPERLESS_CONTAINER:-app_55eca821_paperless-ngx}"
+# The Paperless add-on's consumer daemon watches its CONSUMPTION_DIR, which is
+# /share/paperless/consume in this add-on image (not the image default path).
+CONSUME_DIR=$(python3 -c "import json; print(json.load(open('/data/options.json')).get('consume_path', '/share/paperless/consume'))" 2>/dev/null)
+CONSUME_DIR="${CONSUME_DIR:-/share/paperless/consume}"
 
 # Fast loop: HA button trigger (mtime of /share/wsd_scan_trigger) + mover to Paperless consume.
 (
@@ -28,8 +32,8 @@ PAPERLESS_CONTAINER="${PAPERLESS_CONTAINER:-app_55eca821_paperless-ngx}"
       [ -f "$f" ] || continue
       b=$(basename "$f")
       docker cp "app_01037a72_wsd_scan_receiver:/data/scans/$b" "/tmp/mv_$b" 2>>/data/scan.log \
-        && docker cp "/tmp/mv_$b" "$PAPERLESS_CONTAINER:/usr/src/paperless/consume/$b" 2>>/data/scan.log \
-        && docker exec "$PAPERLESS_CONTAINER" chmod 644 "/usr/src/paperless/consume/$b" 2>>/data/scan.log \
+        && docker cp "/tmp/mv_$b" "$PAPERLESS_CONTAINER:$CONSUME_DIR/$b" 2>>/data/scan.log \
+        && docker exec "$PAPERLESS_CONTAINER" chmod 644 "$CONSUME_DIR/$b" 2>>/data/scan.log \
         && rm -f "$f" "/tmp/mv_$b" \
         && echo "$(date +%FT%T) moved $b -> paperless consume" >> /data/scan.log
     done
