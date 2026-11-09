@@ -20,6 +20,8 @@ COPY scripts ./scripts
 
 RUN pip install --no-cache-dir .
 
+RUN chmod +x /app/scripts/run.sh /app/scripts/mover.sh 2>/dev/null || true
+
 CMD ["sh", "-c", "exec /app/scripts/run.sh"]
 
 EXPOSE 5357/tcp
