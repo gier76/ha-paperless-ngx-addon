@@ -1,11 +1,13 @@
-version: "0.1.4"
+version: "0.1.5"
 slug: "wsd_scan_receiver"
 name: "WSD Scan Receiver (Scan-to-PC)"
 description: >
   Acts as a WSD/WS-Scan scan destination for network scanners and MFPs
   (e.g. Canon "Scan to PC"/"Save to computer"). Self-contained delivery:
   scans are stored in /data/scans and moved into the Paperless-ngx add-on
-  consume folder via the Docker socket (no host-side processes).
+  consume folder via the Docker socket (no host-side processes). Multi-page
+  scans: POST /multi?pages=N on port 18125 arms a batch; the N arriving
+  pages are merged into ONE PDF before delivery to Paperless.
 url: "https://github.com/gier76/ha-paperless-ngx-addon"
 arch:
   - amd64

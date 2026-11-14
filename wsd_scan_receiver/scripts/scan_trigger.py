@@ -1,4 +1,4 @@
-import json, os
+import argparse, dataclasses, json, os
 
 from wsd_scan_receiver.config import Config
 from wsd_scan_receiver.logging_config import configure_logging
@@ -12,6 +12,9 @@ from wsd_scan_receiver.ws_scan_client import (
 
 configure_logging("INFO")
 svc = WsScanClientService(Config.from_env())
+ap = argparse.ArgumentParser()
+ap.add_argument("--pages", type=int, default=0)
+args = ap.parse_args()
 import time
 path = "/data/wsd-subscriptions.json"
 deadline = time.monotonic() + 20
@@ -22,6 +25,11 @@ while not os.path.exists(path):
 subs = json.load(open(path))
 sub = list(subs.values())[0]
 ticket = svc.config.scan_ticket_store.get() if svc.config.scan_ticket_store else svc.config.scan_ticket
+source = "FlatBed"
+if args.pages > 1:
+    # Multi-page job: ImagesToTransfer=N lets the ADF feed the whole stack.
+    ticket = dataclasses.replace(ticket, images_to_transfer=args.pages)
+    source = "Auto"
 
 xml = create_scan_job_xml(
     sub["manager_url"],
@@ -30,7 +38,7 @@ xml = create_scan_job_xml(
     device_name=service_settings(svc.config).wsd_device_name,
     from_endpoint=svc.config.endpoint_uuid,
     scan_ticket=ticket,
-    input_source="FlatBed",
+    input_source=source,
 )
 print("[1] CreateScanJob gesendet")
 body = svc._post_soap(sub["manager_url"], xml)
