@@ -20,8 +20,9 @@ def jpeg_size(data: bytes):
             continue
         marker = data[pos + 1]
         if marker in (0xC0, 0xC1, 0xC2, 0xC3):  # SOF0..SOF3
-            h = int.from_bytes(data[pos + 7 : pos + 9], "big")
-            w = int.from_bytes(data[pos + 9 : pos + 11], "big")
+            # segment: FF Cn LEN(2) PRECISION H(2) W(2)
+            h = int.from_bytes(data[pos + 5 : pos + 7], "big")
+            w = int.from_bytes(data[pos + 7 : pos + 9], "big")
             break
         if marker in (0xD8, 0x01) or 0xD0 <= marker <= 0xD7:
             pos += 2
@@ -76,21 +77,23 @@ def build_pdf(jpeg_paths):
     for blob, (w, h) in zip(blobs, sizes):
         img_num = next_num
         page_num = next_num + 1
-        next_num += 2
+        cont_num = next_num + 2
+        next_num += 3
         wpt = round(w * 72 / dpi, 2)
         hpt = round(h * 72 / dpi, 2)
-        page_objs.append((page_num, img_num, wpt, hpt))
+        page_objs.append((page_num, img_num, cont_num, wpt, hpt))
         img_objs.append(
             (img_num, b"<< /Type /XObject /Subtype /Image /Width %d /Height %d "
              b"/ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length %d >>\nstream\n%s\nendstream"
              % (w, h, len(blob), blob))
         )
 
-    kids = b" ".join(b"%d 0 R" % n for n, _, _, _ in page_objs)
+    kids = b" ".join(b"%d 0 R" % n for n, _, _, _, _ in page_objs)
     objects.append((catalog_num, b"<< /Type /Catalog /Pages %d 0 R >>" % pages_num))
     objects.append((pages_num, b"<< /Type /Pages /Kids [%s] /Count %d >>" % (kids, len(page_objs))))
-    for num, img_num, wpt, hpt in page_objs:
-        objects.append((num, b"<< /Type /Page /Parent %d 0 R /MediaBox [0 0 %.2f %.2f] /Resources << /XObject << /Im0 %d 0 R >> >> >>" % (pages_num, wpt, hpt, img_num)))
+    for num, img_num, cont_num, wpt, hpt in page_objs:
+        objects.append((num, b"<< /Type /Page /Parent %d 0 R /MediaBox [0 0 %.2f %.2f] /Resources << /XObject << /Im0 %d 0 R >> >> /Contents %d 0 R >>" % (pages_num, wpt, hpt, img_num, cont_num)))
+        objects.append((cont_num, b"<< /Length %d >>\nstream\n%s\nendstream" % (len(b"q %.2f 0 0 %.2f 0 0 cm /Im0 Do Q\n" % (wpt, hpt)), b"q %.2f 0 0 %.2f 0 0 cm /Im0 Do Q\n" % (wpt, hpt))))
     objects.extend(img_objs)
 
     out = bytearray(b"%PDF-1.4\n")
