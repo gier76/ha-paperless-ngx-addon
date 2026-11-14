@@ -53,8 +53,9 @@ def jpeg_size(data: bytes):
             break
     if w == 0 or h == 0:
         raise ValueError("no SOF marker found")
-    if orientation in (5, 6, 7, 8):
-        w, h = h, w
+    # Declare ACTUAL pixel dimensions. Swapping for EXIF orientation makes the
+    # declared W/H disagree with the embedded JPEG, which poppler rejects
+    # (blank render, empty OCR). Scanner rasters are stored upright anyway.
     return w, h
 
 
