@@ -42,7 +42,7 @@ MULTI_TIMEOUT=240
     if [ "$PAGES" -gt 1 ]; then
       N=$(ls /data/scans/*.jpg 2>/dev/null | wc -l)
       AGE=$(( $(date +%s) - ARMED ))
-      if [ "$N" -ge "$PAGES" ] || { [ "$AGE" -gt "$MULTI_TIMEOUT" ] && [ "$N" -gt 0 ]; }; then
+      if [ "$N" -ge "$PAGES" ] || [ "$AGE" -gt "$MULTI_TIMEOUT" ]; then
         out="/data/scans/scan-multi-$(date +%Y%m%dT%H%M%S).pdf"
         if python3 /app/scripts/pdf_merge.py "$out" /data/scans/*.jpg >>/data/scan.log 2>&1; then
           b=$(basename "$out")
