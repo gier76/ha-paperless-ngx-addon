@@ -35,8 +35,8 @@ MULTI_TIMEOUT=240
     PAGES=0
     ARMED=0
     if [ -f /data/multi_pending.json ]; then
-      PAGES=$(python3 -c "import json;print(json.load(open('/data/multi_pending.json')).get('pages',0))" 2>/dev/null || echo 0)
-      ARMED=$(python3 -c "import json;print(json.load(open('/data/multi_pending.json')).get('armed',0))" 2>/dev/null || echo 0)
+      PAGES=$(python3 -c "import json;print(int(json.load(open('/data/multi_pending.json')).get('pages',0)))" 2>/dev/null || echo 0)
+      ARMED=$(python3 -c "import json;print(int(json.load(open('/data/multi_pending.json')).get('armed',0)))" 2>/dev/null || echo 0)
     fi
 
     if [ "$PAGES" -gt 1 ]; then

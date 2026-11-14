@@ -18,7 +18,7 @@ PORT = 18125
 
 
 def _arm(pages: int) -> dict:
-    state = {"pages": pages, "armed": time.time()}
+    state = {"pages": pages, "armed": int(time.time())}
     with open(PENDING, "w") as fh:
         json.dump(state, fh)
     subprocess.Popen(
